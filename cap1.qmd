@@ -1,0 +1,73 @@
+---
+title: "Capítulo 1: Detecção de Contorno de Dente"
+format: html
+code-fold: true
+jupyter: python3
+---
+
+```{python}
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import splprep, splev
+from scipy import ndimage
+
+# 1. Carregar imagem
+# Se a imagem for colorida, o '0' a converte para tons de cinza
+img_orig = cv2.imread('molarinferior.jpg', 0)
+
+if img_orig is None:
+    print("Erro: Arquivo de imagem não encontrado.")
+else:
+    # 2. Aumentar contraste (CLAHE) - Essencial para branco sobre branco
+    # Isso destaca a "sombra" na borda do dente
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    cl1 = clahe.apply(img_orig)
+
+    # 3. Suavizar para reduzir ruído de pixels
+    blurred = cv2.GaussianBlur(cl1, (5, 5), 0)
+
+    # 4. Detecção de Bordas (Canny)
+    # Ajuste 30 e 100 se a borda sumir ou aparecer muito ruído
+    edges = cv2.Canny(blurred, 30, 100)
+
+    # 1. Dilatar as bordas para fechar qualquer pequeno espaço no contorno externo
+    kernel = np.ones((5, 5), np.uint8)
+    dilated = cv2.dilate(edges, kernel, iterations=1)
+
+    # 2. Preencher o interior do dente (Transforma a borda em um objeto sólido)
+    # Isso elimina as "linhas poluídas" de dentro do dente
+
+    mask = ndimage.binary_fill_holes(dilated).astype(np.uint8) * 255
+
+    # 3. Agora extraímos APENAS o contorno externo dessa máscara sólida
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    if len(contours) > 0:
+        # Pegamos o maior objeto detectado (o dente principal)
+        cnt = max(contours, key=cv2.contourArea).reshape(-1, 2)
+
+        # 4. Suavização Matemática (Spline)
+        # Aumentamos o 's' para ignorar o "serrilhado" da dilatação
+        tck, u = splprep([cnt[:, 0], cnt[:, 1]], s=50.0, per=True)
+        u_new = np.linspace(u.min(), u.max(), 1000)
+        x_new, y_new = splev(u_new, tck)
+
+        # 8. Visualização Final
+        plt.figure(figsize=(12, 6))
+
+        plt.subplot(1, 2, 1)
+        plt.title("Contraste Realçado (CLAHE)")
+        plt.imshow(cl1, cmap='gray')
+
+        plt.subplot(1, 2, 2)
+        plt.title("Curva Matemática sobre a Imagem")
+        plt.imshow(img_orig, cmap='gray')
+        plt.plot(cnt[:, 0], cnt[:, 1], 'ro', markersize=0.5, label='Pixels Detectados', alpha=0.5)
+        plt.plot(x_new, y_new, 'b-', linewidth=2, label='Curva Spline')
+        plt.legend()
+        plt.gca().invert_yaxis()  # Inverter para alinhar coordenadas da imagem
+
+        plt.tight_layout()
+        plt.show()
+```

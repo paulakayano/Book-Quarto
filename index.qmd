@@ -1,0 +1,6 @@
+# Prefácio {.unnumbered}
+
+Este é o "boneco" de um livro em Quarto. Ele pode ser editado e personalizado para atender às necessidades do projeto Educa Nutes FOUSP.
+
+
+To learn more about Quarto books visit <https://quarto.org/docs/books>.

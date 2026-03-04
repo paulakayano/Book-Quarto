@@ -1,0 +1,26 @@
+project:
+  type: book
+
+book:
+  title: "Book Quarto - Nutes FOUSP"
+  author: "PK"
+  date: "04/03/2026"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - cap1.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+
