@@ -1,42 +1,37 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Book Quarto - Nutes FOUSP",
-    "section": "",
-    "text": "Prefácio\nEste é o “boneco” de um livro em Quarto. Ele pode ser editado e personalizado para atender às necessidades do projeto Educa Nutes FOUSP.\nTo learn more about Quarto books visit https://quarto.org/docs/books.",
-    "crumbs": [
-      "Prefácio"
-    ]
-  },
-  {
-    "objectID": "intro.html",
-    "href": "intro.html",
-    "title": "1  Introdução",
-    "section": "",
-    "text": "This is a book created from markdown and executable code.\nEste é um livro criado a partir de markdown e código executável.",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introdução</span>"
-    ]
-  },
-  {
-    "objectID": "cap1.html",
-    "href": "cap1.html",
-    "title": "2  Capítulo 1: Detecção de Contorno de Dente",
-    "section": "",
-    "text": "Code\nimport cv2\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom scipy.interpolate import splprep, splev\nfrom scipy import ndimage\n\n# 1. Carregar imagem\n# Se a imagem for colorida, o '0' a converte para tons de cinza\nimg_orig = cv2.imread('molarinferior.jpg', 0)\n\nif img_orig is None:\n    print(\"Erro: Arquivo de imagem não encontrado.\")\nelse:\n    # 2. Aumentar contraste (CLAHE) - Essencial para branco sobre branco\n    # Isso destaca a \"sombra\" na borda do dente\n    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))\n    cl1 = clahe.apply(img_orig)\n\n    # 3. Suavizar para reduzir ruído de pixels\n    blurred = cv2.GaussianBlur(cl1, (5, 5), 0)\n\n    # 4. Detecção de Bordas (Canny)\n    # Ajuste 30 e 100 se a borda sumir ou aparecer muito ruído\n    edges = cv2.Canny(blurred, 30, 100)\n\n    # 1. Dilatar as bordas para fechar qualquer pequeno espaço no contorno externo\n    kernel = np.ones((5, 5), np.uint8)\n    dilated = cv2.dilate(edges, kernel, iterations=1)\n\n    # 2. Preencher o interior do dente (Transforma a borda em um objeto sólido)\n    # Isso elimina as \"linhas poluídas\" de dentro do dente\n\n    mask = ndimage.binary_fill_holes(dilated).astype(np.uint8) * 255\n\n    # 3. Agora extraímos APENAS o contorno externo dessa máscara sólida\n    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n\n    if len(contours) &gt; 0:\n        # Pegamos o maior objeto detectado (o dente principal)\n        cnt = max(contours, key=cv2.contourArea).reshape(-1, 2)\n\n        # 4. Suavização Matemática (Spline)\n        # Aumentamos o 's' para ignorar o \"serrilhado\" da dilatação\n        tck, u = splprep([cnt[:, 0], cnt[:, 1]], s=50.0, per=True)\n        u_new = np.linspace(u.min(), u.max(), 1000)\n        x_new, y_new = splev(u_new, tck)\n\n        # 8. Visualização Final\n        plt.figure(figsize=(12, 6))\n\n        plt.subplot(1, 2, 1)\n        plt.title(\"Contraste Realçado (CLAHE)\")\n        plt.imshow(cl1, cmap='gray')\n\n        plt.subplot(1, 2, 2)\n        plt.title(\"Curva Matemática sobre a Imagem\")\n        plt.imshow(img_orig, cmap='gray')\n        plt.plot(cnt[:, 0], cnt[:, 1], 'ro', markersize=0.5, label='Pixels Detectados', alpha=0.5)\n        plt.plot(x_new, y_new, 'b-', linewidth=2, label='Curva Spline')\n        plt.legend()\n        plt.gca().invert_yaxis()  # Inverter para alinhar coordenadas da imagem\n\n        plt.tight_layout()\n        plt.show()",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Capítulo 1: Detecção de Contorno de Dente</span>"
-    ]
-  },
-  {
     "objectID": "summary.html",
     "href": "summary.html",
     "title": "Sumário",
     "section": "",
-    "text": "In summary, this book has no content whatsoever.",
-    "crumbs": [
-      "Sumário"
-    ]
+    "text": "Sumário\nIn summary, this book has no content whatsoever."
+  },
+  {
+    "objectID": "intro.html",
+    "href": "intro.html",
+    "title": "Introdução",
+    "section": "",
+    "text": "Introdução\nThis is a book created from markdown and executable code.\nEste é um livro criado a partir de markdown e código executável."
+  },
+  {
+    "objectID": "cap1.html",
+    "href": "cap1.html",
+    "title": "Capítulo 1: Detecção de Contorno de Dente",
+    "section": "",
+    "text": "Code\nimport cv2\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom scipy.interpolate import splprep, splev\nfrom scipy import ndimage\n\n# 1. Carregar imagem\n# Se a imagem for colorida, o '0' a converte para tons de cinza\nimg_orig = cv2.imread('molarinferior.jpg', 0)\n\nif img_orig is None:\n    print(\"Erro: Arquivo de imagem não encontrado.\")\nelse:\n    # 2. Aumentar contraste (CLAHE) - Essencial para branco sobre branco\n    # Isso destaca a \"sombra\" na borda do dente\n    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))\n    cl1 = clahe.apply(img_orig)\n\n    # 3. Suavizar para reduzir ruído de pixels\n    blurred = cv2.GaussianBlur(cl1, (5, 5), 0)\n\n    # 4. Detecção de Bordas (Canny)\n    # Ajuste 30 e 100 se a borda sumir ou aparecer muito ruído\n    edges = cv2.Canny(blurred, 30, 100)\n\n    # 1. Dilatar as bordas para fechar qualquer pequeno espaço no contorno externo\n    kernel = np.ones((5, 5), np.uint8)\n    dilated = cv2.dilate(edges, kernel, iterations=1)\n\n    # 2. Preencher o interior do dente (Transforma a borda em um objeto sólido)\n    # Isso elimina as \"linhas poluídas\" de dentro do dente\n\n    mask = ndimage.binary_fill_holes(dilated).astype(np.uint8) * 255\n\n    # 3. Agora extraímos APENAS o contorno externo dessa máscara sólida\n    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n\n    if len(contours) &gt; 0:\n        # Pegamos o maior objeto detectado (o dente principal)\n        cnt = max(contours, key=cv2.contourArea).reshape(-1, 2)\n\n        # 4. Suavização Matemática (Spline)\n        # Aumentamos o 's' para ignorar o \"serrilhado\" da dilatação\n        tck, u = splprep([cnt[:, 0], cnt[:, 1]], s=50.0, per=True)\n        u_new = np.linspace(u.min(), u.max(), 1000)\n        x_new, y_new = splev(u_new, tck)\n\n        # 8. Visualização Final\n        plt.figure(figsize=(12, 6))\n\n        plt.subplot(1, 2, 1)\n        plt.title(\"Contraste Realçado (CLAHE)\")\n        plt.imshow(cl1, cmap='gray')\n\n        plt.subplot(1, 2, 2)\n        plt.title(\"Curva Matemática sobre a Imagem\")\n        plt.imshow(img_orig, cmap='gray')\n        plt.plot(cnt[:, 0], cnt[:, 1], 'ro', markersize=0.5, label='Pixels Detectados', alpha=0.5)\n        plt.plot(x_new, y_new, 'b-', linewidth=2, label='Curva Spline')\n        plt.legend()\n        plt.gca().invert_yaxis()  # Inverter para alinhar coordenadas da imagem\n\n        plt.tight_layout()\n        plt.show()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Prefácio",
+    "section": "",
+    "text": "Prefácio\nEste é o “boneco” de um livro em Quarto. Ele pode ser editado e personalizado para atender às necessidades do projeto Educa Nutes FOUSP.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "Referencias",
+    "section": "",
+    "text": "Referencias"
   }
 ]
